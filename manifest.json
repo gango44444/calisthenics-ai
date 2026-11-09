@@ -1,0 +1,13 @@
+
+{
+  "name": "Calisthenics AI",
+  "short_name": "Calisthenics",
+  "description": "Il tuo coach personale per il calisthenics, la forza e la crescita muscolare.",
+  "lang": "it",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#101310",
+  "theme_color": "#101310"
+}
