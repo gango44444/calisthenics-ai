@@ -1,0 +1,242 @@
+
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#101310">
+<title>Calisthenics AI</title>
+<style>
+:root{--bg:#101310;--panel:#1a201b;--panel2:#222a23;--green:#a5f36c;--muted:#9ba69b;--white:#f3f6f0;--line:#303a30}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--white);font-family:Arial,sans-serif;padding-bottom:90px}
+header{padding:25px 20px 15px;display:flex;justify-content:space-between;align-items:center}
+.logo{font-size:21px;font-weight:800}.logo span{color:var(--green)}
+main{padding:10px 18px;max-width:650px;margin:auto}
+h1{font-size:28px;margin:12px 0 5px}h2{font-size:21px;margin:24px 0 12px}
+p{color:var(--muted);line-height:1.5}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:17px;padding:17px;margin:12px 0}
+.hero{background:linear-gradient(135deg,#243c25,#18221a);border:1px solid #46613d}
+.hero h1{font-size:30px}.green{color:var(--green)}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.stat{background:var(--panel);padding:16px;border-radius:14px}
+.stat strong{display:block;font-size:25px;color:var(--green);margin-bottom:5px}
+button{border:0;border-radius:12px;padding:13px 16px;background:var(--green);color:#101710;font-weight:700;font-size:14px;cursor:pointer}
+button.secondary{background:var(--panel2);color:var(--white);border:1px solid var(--line)}
+button:disabled{opacity:.5}
+nav{position:fixed;bottom:0;left:0;right:0;background:#171d18;border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:10px 3px calc(10px + env(safe-area-inset-bottom));z-index:5}
+nav button{background:transparent;color:var(--muted);padding:9px 5px;font-size:12px;flex:1}
+nav button.active{color:var(--green)}
+.page{display:none}.page.active{display:block}
+.exercise{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.exercise small{color:var(--muted)}
+input,select{width:100%;background:var(--panel2);border:1px solid var(--line);color:white;border-radius:10px;padding:13px;margin:7px 0 14px;font-size:15px}
+label{font-size:13px;color:var(--muted)}
+.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.row button{flex:1}
+.tag{font-size:11px;color:var(--green);background:#263927;padding:6px 9px;border-radius:20px}
+.bar{height:8px;background:#303a30;border-radius:8px;overflow:hidden;margin:10px 0}
+.bar div{height:100%;background:var(--green);width:0}
+.item{padding:13px 0;border-bottom:1px solid var(--line)}
+.timer{font-size:38px;font-weight:bold;text-align:center;color:var(--green);padding:15px}
+footer{text-align:center;color:var(--muted);font-size:11px;padding:25px}
+</style>
+</head>
+<body>
+<header><div class="logo">CALISTHENICS <span>AI</span></div><span class="tag">PERSONAL COACH</span></header>
+<main>
+<section id="home" class="page active">
+<div class="hero card">
+<span class="tag">IL TUO PERCORSO INIZIA QUI</span>
+<h1>Costruisci la tua <span class="green">forza.</span></h1>
+<p>Allenati con metodo. Registra i risultati. Migliora ogni settimana.</p>
+<button onclick="show('workouts')">Vai all'allenamento →</button>
+</div>
+<h2>La tua attività</h2>
+<div class="stats">
+<div class="stat"><strong id="sessions">0</strong><small>Allenamenti completati</small></div>
+<div class="stat"><strong id="records">0</strong><small>Serie registrate</small></div>
+</div>
+<h2>Obiettivo di oggi</h2>
+<div class="card">
+<strong>Forza e ipertrofia</strong>
+<p>Costruisci una base solida con esercizi fondamentali, tecnica corretta e recupero.</p>
+<div class="bar"><div id="goalbar"></div></div>
+<small id="goaltext">Inizia il tuo primo allenamento</small>
+</div>
+<h2>Il tuo equipaggiamento</h2>
+<div class="row"><span class="tag">Corpo libero</span><span class="tag">Push-up board</span><span class="tag">Ab wheel</span><span class="tag">Hand gripper</span></div>
+</section>
+
+<section id="workouts" class="page">
+<h1>Allenamenti</h1><p>Programma iniziale: tre sedute settimanali, con recupero tra le sessioni.</p>
+<div class="card">
+<span class="tag">GIORNO A · FULL BODY</span>
+<h2>Forza generale</h2>
+<div id="planA"></div>
+<button onclick="startWorkout('A')">Inizia allenamento A</button>
+</div>
+<div class="card">
+<span class="tag">GIORNO B · FULL BODY</span>
+<h2>Controllo e stabilità</h2>
+<div id="planB"></div>
+<button onclick="startWorkout('B')">Inizia allenamento B</button>
+</div>
+<div id="sessionBox" class="card" style="display:none">
+<h2 id="sessionTitle">Allenamento</h2>
+<div id="sessionExercises"></div>
+<div class="timer" id="timer">01:30</div>
+<div class="row"><button class="secondary" onclick="timerStart()">Avvia recupero</button><button class="secondary" onclick="timerStop()">Ferma</button></div>
+<button style="width:100%;margin-top:15px" onclick="finishWorkout()">Completa allenamento</button>
+</div>
+</section>
+
+<section id="library" class="page">
+<h1>Libreria esercizi</h1><p>Impara i movimenti e scegli la variante adatta al tuo livello.</p>
+<div id="libraryList"></div>
+</section>
+
+<section id="progress" class="page">
+<h1>I tuoi progressi</h1>
+<div class="stats">
+<div class="stat"><strong id="pSessions">0</strong><small>Sedute</small></div>
+<div class="stat"><strong id="pSets">0</strong><small>Serie registrate</small></div>
+</div>
+<div class="card">
+<h2>Registra un risultato</h2>
+<label>Esercizio</label><select id="logExercise"></select>
+<label>Ripetizioni</label><input id="logReps" type="number" min="1" placeholder="Es. 10">
+<label>Serie completate</label><input id="logSets" type="number" min="1" placeholder="Es. 3">
+<button onclick="saveLog()">Salva risultato</button>
+</div>
+<div class="card"><h2>Storico</h2><div id="history">Ancora nessun risultato.</div></div>
+</section>
+
+<section id="coach" class="page">
+<h1>Coach <span class="green">AI</span></h1>
+<p>Un assistente locale che usa i tuoi risultati e le tue risposte. Non richiede account o API.</p>
+<div class="card">
+<h2>Come ti senti oggi?</h2>
+<select id="feeling"><option value="good">Mi sento bene</option><option value="tired">Sono stanco</option><option value="sore">Ho dolori muscolari</option></select>
+<label>Quante ripetizioni riesci a fare in un push-up pulito?</label>
+<input id="level" type="number" min="0" placeholder="Es. 8">
+<button onclick="getAdvice()">Chiedi al coach</button>
+<div id="advice" class="item">Le tue indicazioni appariranno qui.</div>
+</div>
+<div class="card">
+<h2>Consiglio tecnico</h2>
+<p>Non sacrificare la tecnica per fare più ripetizioni. Mantieni il movimento controllato e interrompi la serie quando non riesci più a eseguire correttamente l'esercizio.</p>
+</div>
+<button class="secondary" onclick="openChatGPT()">Apri ChatGPT per un consiglio approfondito ↗</button>
+</section>
+
+<section id="profile" class="page">
+<h1>Profilo</h1>
+<div class="card">
+<h2>Il tuo obiettivo</h2>
+<select id="objective"><option>Forza e ipertrofia</option><option>Forza massimale</option><option>Resistenza muscolare</option><option>Mobilità e controllo</option></select>
+<label>Peso corporeo (kg)</label><input id="weight" type="number" placeholder="Inserisci il peso">
+<button onclick="saveProfile()">Salva profilo</button>
+</div>
+<div class="card">
+<h2>I tuoi dati</h2>
+<p>I dati sono salvati localmente sul dispositivo.</p>
+<button class="secondary" onclick="exportData()">Esporta backup</button>
+<button class="secondary" onclick="document.getElementById('importFile').click()">Importa backup</button>
+<input id="importFile" type="file" accept="application/json" style="display:none" onchange="importData(event)">
+</div>
+<footer>CALISTHENICS AI · Versione iniziale · Dati sul dispositivo</footer>
+</section>
+</main>
+
+<nav>
+<button class="active" data-page="home" onclick="show('home')">⌂<br>Home</button>
+<button data-page="workouts" onclick="show('workouts')">↗<br>Workout</button>
+<button data-page="library" onclick="show('library')">▤<br>Esercizi</button>
+<button data-page="progress" onclick="show('progress')">▥<br>Progressi</button>
+<button data-page="coach" onclick="show('coach')">✦<br>Coach</button>
+</nav>
+<script>
+const exercises={
+"Push-up": "Petto, tricipiti e spalle. Corpo in linea, addome attivo e petto verso il pavimento. Variante facile: mani rialzate.",
+"Squat": "Gambe e glutei. Piedi stabili, ginocchia nella direzione delle punte e schiena controllata.",
+"Glute bridge": "Glutei e posterior chain. Spingi attraverso i piedi e contrai i glutei in alto.",
+"Prone Y-T-W": "Schiena e controllo scapolare. Da prono, solleva le braccia formando Y, T e W senza inarcare la schiena.",
+"Dead bug": "Addome e stabilità. Schiena bassa controllata a terra, alterna braccio e gamba opposti.",
+"Calf raises": "Polpacci. Sali sulle punte lentamente e scendi in modo controllato.",
+"Pike push-up": "Spalle e tricipiti. Bacino alto, testa verso il pavimento tra le mani.",
+"Reverse lunge": "Gambe e glutei. Fai un passo indietro, scendi controllando il ginocchio.",
+"Reverse snow angel": "Schiena e spalle posteriori. Da prono, muovi lentamente le braccia mantenendo il controllo.",
+"Ab wheel": "Addome. Inizia con escursione breve e solo se riesci a mantenere il bacino stabile. Variante: rollout al muro.",
+"Bird dog": "Core e stabilità. Allunga braccio e gamba opposti senza ruotare il bacino.",
+"Hand gripper": "Presa e avambracci. Stringi e rilascia lentamente, senza forzare il dolore."
+};
+const A=[["Push-up","3 × 6-10"],["Squat","3 × 12"],["Glute bridge","3 × 12"],["Prone Y-T-W","2 × 8"],["Dead bug","3 × 10"],["Calf raises","2 × 15"]];
+const B=[["Pike push-up","3 × 5-8"],["Reverse lunge","3 × 8 per gamba"],["Reverse snow angel","2 × 10"],["Ab wheel","2 × 5 controllate"],["Bird dog","3 × 8"],["Hand gripper","2 × 12"]];
+let data=JSON.parse(localStorage.getItem("cai-data")||'{"sessions":0,"sets":0,"logs":[],"weight":""}');
+let current=null,interval=null,seconds=90;
+function save(){localStorage.setItem("cai-data",JSON.stringify(data));update()}
+function show(id){
+document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+document.getElementById(id).classList.add('active');
+document.querySelectorAll('nav button').forEach(b=>b.classList.toggle('active',b.dataset.page===id));
+}
+function renderPlan(id,arr){
+document.getElementById(id).innerHTML=arr.map(x=>`<div class="item exercise"><span>${x[0]}<br><small>${x[1]}</small></span><span class="tag">●</span></div>`).join('');
+}
+function startWorkout(type){
+current=type;let arr=type==="A"?A:B;
+document.getElementById('sessionBox').style.display='block';
+document.getElementById('sessionTitle').textContent='Allenamento '+type;
+document.getElementById('sessionExercises').innerHTML=arr.map(x=>`<div class="item"><b>${x[0]}</b><br><small>${x[1]}</small></div>`).join('');
+show('workouts');document.getElementById('sessionBox').scrollIntoView({behavior:'smooth'});
+}
+function finishWorkout(){
+if(!current)return;
+data.sessions++;data.sets+=(current==="A"?A:B).reduce((n,x)=>n+parseInt(x[1]),0);
+data.logs.unshift({name:"Allenamento "+current,reps:"—",sets:"Seduta completata",date:new Date().toLocaleDateString('it-IT')});
+save();current=null;document.getElementById('sessionBox').style.display='none';alert('Allenamento completato! Ottimo lavoro.');
+}
+function timerStart(){
+timerStop();interval=setInterval(()=>{seconds--;if(seconds<=0){timerStop();seconds=0;navigator.vibrate?.(200);alert('Recupero terminato!');}document.getElementById('timer').textContent=String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0')},1000)
+}
+function timerStop(){clearInterval(interval)}
+function saveLog(){
+let name=document.getElementById('logExercise').value,reps=+document.getElementById('logReps').value,sets=+document.getElementById('logSets').value;
+if(!reps||!sets||reps<1||sets<1){alert('Inserisci ripetizioni e serie valide.');return}
+data.logs.unshift({name,reps,sets,date:new Date().toLocaleDateString('it-IT')});data.sets+=sets;save();document.getElementById('logReps').value='';document.getElementById('logSets').value='';alert('Risultato salvato!');
+}
+function update(){
+document.getElementById('sessions').textContent=data.sessions;
+document.getElementById('records').textContent=data.sets;
+document.getElementById('pSessions').textContent=data.sessions;
+document.getElementById('pSets').textContent=data.sets;
+document.getElementById('goalbar').style.width=Math.min(100,data.sessions*10)+'%';
+document.getElementById('goaltext').textContent=data.sessions+' allenamenti completati';
+document.getElementById('history').innerHTML=data.logs.length?data.logs.slice(0,25).map(x=>`<div class="item"><b>${x.name}</b><br><small>${x.reps} ripetizioni · ${x.sets} serie · ${x.date}</small></div>`).join(''):'Ancora nessun risultato.';
+}
+function getAdvice(){
+let f=document.getElementById('feeling').value,n=+document.getElementById('level').value;
+let msg=f==='sore'?'Se hai dolore, evita di allenare la zona interessata. Se è intenso, persistente o insolito, fermati e chiedi una valutazione professionale.':f==='tired'?'Oggi riduci il volume o fai recupero attivo. Non serve forzare una seduta quando sei molto stanco.':n>0&&n<5?'Parti da push-up inclinati e serie brevi, mantenendo sempre una tecnica pulita.':n>=5?'Usa una variante che ti permetta serie controllate, lasciando circa 2 ripetizioni in riserva.': 'Inizia con una variante facile e verifica quante ripetizioni pulite riesci a fare.';
+document.getElementById('advice').textContent=msg;
+}
+function saveProfile(){data.weight=document.getElementById('weight').value;data.objective=document.getElementById('objective').value;save();alert('Profilo salvato!')}
+function exportData(){
+let blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='calisthenics-ai-backup.json';a.click();URL.revokeObjectURL(a.href)
+}
+function importData(e){
+let file=e.target.files[0];if(!file)return;
+let r=new FileReader();r.onload=()=>{try{let d=JSON.parse(r.result);if(!Array.isArray(d.logs))throw Error();data=d;save();alert('Backup importato!')}catch{alert('File di backup non valido.')}};r.readAsText(file)
+}
+function openChatGPT(){
+let prompt="Agisci come coach di calisthenics. Aiutami a migliorare forza e ipertrofia a casa. Attrezzatura: push-up board, ab wheel, hand gripper e corpo libero. Livello iniziale. Dammi indicazioni prudenti, progressioni e recupero.";window.open('https://chatgpt.com/?q='+encodeURIComponent(prompt),'_blank')
+}
+renderPlan('planA',A);renderPlan('planB',B);
+document.getElementById('libraryList').innerHTML=Object.entries(exercises).map(([n,d])=>`<div class="card"><b>${n}</b><p>${d}</p></div>`).join('');
+document.getElementById('logExercise').innerHTML=Object.keys(exercises).map(n=>`<option>${n}</option>`).join('');
+if(data.weight)document.getElementById('weight').value=data.weight;
+if(data.objective)document.getElementById('objective').value=data.objective;
+update();
+</script>
+</body>
+</html>
