@@ -6,6 +6,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="theme-color" content="#101310">
 <title>Calisthenics AI</title>
+
+<link rel="manifest" href="./manifest.json">
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js");
+  });
+}
+</script>
+
 <style>
 :root{--bg:#101310;--panel:#1a201b;--panel2:#222a23;--green:#a5f36c;--muted:#9ba69b;--white:#f3f6f0;--line:#303a30}
 *{box-sizing:border-box}
